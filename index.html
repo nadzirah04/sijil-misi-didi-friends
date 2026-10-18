@@ -1,33 +1,170 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>The Shape League</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sijil Penghargaan</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(to right, #F8BBD0, #D6B5E6);
+      flex-direction: column;
+    }
+
+    /* Input Section with Background */
+    .input-section {
+      text-align: center;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .input-section h2 {
+      color: #2E86C1;
+      margin-bottom: 10px;
+    }
+
+    .input-section input {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      width: 80%;
+      box-sizing: border-box;
+      margin: 10px 0;
+    }
+
+    .input-section button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .input-section button:hover {
+      background-color: #45a049;
+    }
+
+    /* Certificate Container */
+    .container {
+      display: none;
+      position: relative;
+      background-image: url("background.jpg"); /* Update with the correct image path */
+      background-size: cover;
+      background-position: center;
+      padding: 20px; /* Adjusted padding */
+      width: 100%;
+      max-width: 21cm; /* Width of A4 */
+      height: 29.7cm; /* Height of A4 */
+      text-align: center;
+      color: #333;
+      border: 1px solid #000; /* Optional: Add border for visibility */
+      overflow: hidden;
+    }
+
+    .container h1 {
+      font-size: 30px;
+      font-weight: bold;
+      color: #2E86C1;
+      margin-top: 0;
+    }
+
+    .container .student-name {
+      font-size: 32px;
+      font-weight: bold;
+      color: blue;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Download Button */
+    .download-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007BFF; /* Blue color */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .download-button:hover {
+      background-color: #0056b3; /* Darker blue */
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>The Shape League</h1>
 
-        <div id="user-section">
-            <label>Nama Kumpulan / Murid: </label>
-            <input type="text" id="username">
-            <button onclick="startQuiz()">Mula</button>
-        </div>
+<!-- Input Section -->
+<div class="input-section">
+  <h2>Masukkan Nama Anda</h2>
+  <input type="text" id="nameInput" placeholder="Nama Murid" required>
+  <button onclick="generateCertificate()">Dapatkan Sijil</button>
+</div>
 
-        <div id="quiz-section" style="display:none;">
-            <h2 id="question-title"></h2>
-            <input type="text" id="answer" placeholder="Masukkan jawapan">
-            <button onclick="submitAnswer()">Hantar</button>
-            <p id="feedback"></p>
-        </div>
+<!-- Certificate Template -->
+<div class="container" id="certificateContainer">
+  <div class="student-name" id="studentName">________</div>
+</div>
 
-        <div id="leaderboard-section">
-            <h2>Leaderboard</h2>
-            <ul id="leaderboard"></ul>
-        </div>
-    </div>
+<!-- Download Button -->
+<button class="download-button" id="downloadButton" style="display: none;" onclick="downloadCertificate()">Muat Turun Sijil</button>
 
-    <script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  // Generate Certificate
+  function generateCertificate() {
+    const name = document.getElementById('nameInput').value;
+    if (name.trim() === "") {
+      alert("Sila masukkan nama anda.");
+      return;
+    }
+    document.getElementById('studentName').textContent = name;
+    document.querySelector('.input-section').style.display = 'none';
+    document.getElementById('certificateContainer').style.display = 'block';
+    document.getElementById('downloadButton').style.display = 'block'; // Show download button
+  }
+
+function downloadCertificate() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', [279, 210]); // Tetapkan orientasi kepada landscape dengan saiz 27.9 cm x 21 cm
+
+    // Muatkan imej latar belakang dan tambahkan ke PDF
+    const backgroundImagePath = 'background.jpg'; // Gantikan dengan laluan imej latar belakang
+    doc.addImage(backgroundImagePath, 'JPEG', 0, 0, 279, 210); // Saiz penuh latar belakang
+  // Add text
+  doc.setFontSize(32);
+  doc.setTextColor(0, 0, 255);
+  const studentName = document.getElementById('studentName').textContent;
+  
+  // Centering the student name
+  const textWidth = doc.getTextWidth(studentName);
+  const xPosition = (doc.internal.pageSize.getWidth() - textWidth) / 2;
+  doc.text(studentName, xPosition, 110); 
+
+  // Save the PDF
+  doc.save(`${studentName}_certificate.pdf`); // Save with student name in the filename
+}
+   
+</script>
+
 </body>
 </html>
