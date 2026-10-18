@@ -87,9 +87,9 @@
     .container .student-name {
       font-size: 32px;
       font-weight: bold;
-      color: blue;
+      color: WHITE;
       position: absolute;
-      top: 50%;
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
     }
@@ -160,10 +160,9 @@ function downloadCertificate() {
   const xPosition = (doc.internal.pageSize.getWidth() - textWidth) / 2;
   doc.text(studentName, xPosition, 110); 
 
-  // Save the PDF
+  // Save the PDF 
   doc.save(`${studentName}_certificate.pdf`); // Save with student name in the filename
 }
-   
 </script>
 
 </body>
